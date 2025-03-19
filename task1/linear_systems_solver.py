@@ -33,6 +33,47 @@ def lu_decomposition(A):
 
     return P, L, U
 
+def forward_pass(L, P, b):
+    """
+    Solve Ly = Pb using forward substitution.
+
+    Parameters:
+    L (np.array): Lower triangular matrix.
+    P (np.array): Permutation matrix.
+    b (np.array): Right-hand side vector.
+
+    Returns:
+    y (np.array): Solution vector.
+    """
+    if L.shape[0] != b.shape[0]:
+        raise np.linalg.LinAlgError("Matrix L and vector b dimension mismatch")
+    
+    Pb = np.dot(P, b)
+    y = np.zeros_like(b)
+    for i in range(len(b)):
+        y[i] = Pb[i] - np.dot(L[i, :i], y[:i])
+
+    return y
+
+def backward_pass(U, y):
+    """
+    Solve Ux = y using back substitution.
+
+    Parameters:
+    U (np.array): Upper triangular matrix.
+    b (np.array): Right-hand side vector.
+
+    Returns:
+    x (np.array): Solution vector.
+    """
+    if U.shape[0] != y.shape[0]:
+        raise np.linalg.LinAlgError("Matrix U and vector y dimension mismatch")
+    
+    x = np.zeros_like(y)
+    for i in range(len(y) - 1, -1, -1):
+        x[i] = (y[i] - np.dot(U[i, i+1:], x[i+1:])) / U[i, i]
+    return x
+
 def solve_lu(A, b):
     """
     Solve the system Ax = b using LU decomposition with partial pivoting.
@@ -60,15 +101,10 @@ def solve_lu(A, b):
     P, L, U = lu_decomposition(A)
 
     # Solve Ly = Pb using forward substitution
-    Pb = np.dot(P, b)
-    y = np.zeros_like(b)
-    for i in range(len(b)):
-        y[i] = Pb[i] - np.dot(L[i, :i], y[:i])
+    y = forward_pass(L, P, b)
 
     # Solve Ux = y using back substitution
-    x = np.zeros_like(b)
-    for i in range(len(b) - 1, -1, -1):
-        x[i] = (y[i] - np.dot(U[i, i+1:], x[i+1:])) / U[i, i]
+    x = backward_pass(U, y)
 
     return x, P, L, U
 

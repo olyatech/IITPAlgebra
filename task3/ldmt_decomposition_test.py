@@ -4,7 +4,7 @@ import pytest
 from ldmt_decomposition import ldmt_decomposition
 
 def test_lower_triangular():
-    matrix_size = 10
+    matrix_size = 100
     A = np.random.rand(matrix_size, matrix_size)
     while np.linalg.matrix_rank(A) != matrix_size:
        A = np.random.rand(matrix_size, matrix_size) 
@@ -13,7 +13,7 @@ def test_lower_triangular():
     assert np.allclose(L, np.tril(L)), "L is not lower triangular"
 
 def test_diagonal():
-    matrix_size = 10
+    matrix_size = 100
     A = np.random.rand(matrix_size, matrix_size)
     while np.linalg.matrix_rank(A) != matrix_size:
        A = np.random.rand(matrix_size, matrix_size) 
@@ -22,7 +22,7 @@ def test_diagonal():
     assert np.allclose(D, np.diag(np.diag(D))), "D is not diagonal"
 
 def test_upper_triangular():
-    matrix_size = 10
+    matrix_size = 100
     A = np.random.rand(matrix_size, matrix_size)
     while np.linalg.matrix_rank(A) != matrix_size:
        A = np.random.rand(matrix_size, matrix_size) 
@@ -31,7 +31,7 @@ def test_upper_triangular():
     assert np.allclose(M, np.tril(M)), "M^T is not upper triangular"
 
 def test_allclose():
-    matrix_size = 10
+    matrix_size = 100
     A = np.random.rand(matrix_size, matrix_size)
     while np.linalg.matrix_rank(A) != matrix_size:
        A = np.random.rand(matrix_size, matrix_size) 

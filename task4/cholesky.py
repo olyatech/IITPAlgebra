@@ -22,7 +22,7 @@ def cholesky_decomposition(A):
         numpy.ndarray: Lower triangular matrix L such that A = LLᵀ
         
     Raises:
-        ValueError: If matrix is not symmetric positive definite
+        np.linalg.LinAlgError: If matrix is not symmetric positive definite
     """
     if A.shape[0] != A.shape[1]:
         raise np.linalg.LinAlgError("Matrix A is not square")
@@ -99,7 +99,7 @@ def solve_cholesky(A, b):
         tuple: (solution x, residual norm ||Ax - b||)
         
     Raises:
-        ValueError: If matrix is not symmetric positive definite
+        np.linalg.LinAlgError: If matrix is not symmetric positive definite
     """
     if A.shape[0] != A.shape[1]:
         raise np.linalg.LinAlgError("Matrix A is not square")
@@ -146,7 +146,7 @@ def test_cholesky_solver():
         print("NumPy solution:", x_np)
         print("Difference:", np.linalg.norm(x - x_np))
 
-    except ValueError as e:
+    except np.linalg.LinAlgError as e:
         print(e)
 
 if __name__ == "__main__":

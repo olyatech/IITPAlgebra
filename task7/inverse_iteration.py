@@ -51,11 +51,54 @@ def inverse_power_iteration(
     eigenvalue = (x.conj().T @ A @ x) / (x.conj().T @ x)
     return x, eigenvalue
 
+import numpy as np
+from numpy.linalg import norm
+
+def test_complex_diagonal_matrix():
+    """
+    Тест для случайной верхней треугольной матрицы с комплексными диагональными элементами.
+    Проверяет, что алгоритм обратных степенных итераций находит собственный вектор и значение,
+    близкие к выбранному диагональному элементу.
+    """
+    np.random.seed(42)  # Для воспроизводимости
+    np.set_printoptions(precision=2)
+    
+    # Генерация случайной верхней треугольной матрицы nxn
+    n = 3
+    A = np.zeros((n, n), dtype=complex)
+    
+    diag = 1 + 4 * (np.random.rand(n) + 1j * np.random.rand(n))
+    np.fill_diagonal(A, diag)
+    
+    for i in range(n):
+        for j in range(i+1, n):
+            A[i, j] = np.random.rand()
+    
+    # Выбор целевого собственного значения (ближайшего к mu)
+    target_idx = 1  # Индекс диагонального элемента
+    target_eigenvalue = diag[target_idx]
+    mu = target_eigenvalue + 0.01 * (1 + 1j)  # Небольшой сдвиг
+    
+    eigenvector, computed_eigenvalue = inverse_power_iteration(A, mu, tol=1e-10)
+    
+    # Сравниваем вычисленное и целевое собственные значения
+    error_eigenvalue = abs(computed_eigenvalue - target_eigenvalue)
+    print(f"Вычисленное собственное значение: {computed_eigenvalue:.6f}")
+    print(f"Ожидаемое собственное значение:   {target_eigenvalue:.6f}")
+    print(f"Ошибка: {error_eigenvalue:.6e}")
+    assert error_eigenvalue < 1e-6, "Собственное значение не совпадает с ожидаемым!"
+    
+    # Проверка, что вектор близок к каноническому базисному вектору
+    expected_vector = np.zeros(n, dtype=complex)
+    expected_vector[target_idx] = 1.0
+    print(f"Найденный вектор: {eigenvector}")
+    print(f"Ожидаемый вектор: {expected_vector}")
+
+    if abs(abs(np.dot(expected_vector, eigenvector)) - 1) < 1e-2:
+        print(f"Полученный вектор близок к коллинеарному с ожидаемым, скалярное произведение {np.dot(expected_vector, eigenvector)}")
+
+
 # Использование для комплексной матрицы
 if __name__ == "__main__":
+    test_complex_diagonal_matrix()
 
-    A_complex = np.array([[3+2j, 1, 0], [0, 5-1j, 2], [0, 0, 2+3j]], dtype=complex)
-    mu_complex = 2.1 + 3.1j  # Близко к lambda = 2+3j
-    vec, val = inverse_power_iteration(A_complex, mu_complex)
-    print("\nСобственный вектор (комплексный случай):\n", vec)
-    print("Соответствующее собственное значение:", val)
